@@ -1,7 +1,7 @@
 function Header() {
     return(
-        <div style={{ backgroundColor: 'navy', color: 'white', textAlign: 'center' }}>
-            <header>
+        <div>
+            <header style={{ backgroundColor: 'navy', color: 'white', textAlign: 'center' }}>
                 <h1>My Favorite Cities</h1>
             </header>
         </div>
