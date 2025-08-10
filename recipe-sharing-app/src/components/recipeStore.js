@@ -1,86 +1,76 @@
 // src/recipeStore.js
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export const useRecipeStore = create((set, get) => ({
+// Helper function for filtering recipes
+const filterHelper = (recipes, term) => {
+  const lowerTerm = term.toLowerCase();
+  return recipes.filter(
+    (recipe) =>
+      recipe.name.toLowerCase().includes(lowerTerm) ||
+      recipe.ingredients.some((ingredient) =>
+        ingredient.toLowerCase().includes(lowerTerm)
+      )
+  );
+};
+
+const useRecipeStore = create((set, get) => ({
   recipes: [],
   filteredRecipes: [],
-  searchTerm: '',
-  // Add / set recipes
+  searchTerm: "",
+
+  // Add a new recipe
   addRecipe: (newRecipe) =>
     set((state) => {
-      const newRecipes = [...state.recipes, newRecipe];
-      // update recipes and filteredRecipes
+      const updatedRecipes = [...state.recipes, newRecipe];
       return {
-        recipes: newRecipes,
-        filteredRecipes: filterHelper(newRecipes, state.searchTerm)
+        recipes: updatedRecipes,
+        filteredRecipes: filterHelper(updatedRecipes, state.searchTerm),
       };
     }),
-  setRecipes: (recipes) =>
-    set((state) => ({
-      recipes,
-      filteredRecipes: filterHelper(recipes, state.searchTerm)
-    })),
 
-  // Update
-  updateRecipe: (updatedRecipe) =>
+  // Update an existing recipe by ID
+  updateRecipe: (id, updatedRecipe) =>
     set((state) => {
-      const newRecipes = state.recipes.map((r) =>
-        r.id === updatedRecipe.id ? updatedRecipe : r
+      const updatedRecipes = state.recipes.map((recipe) =>
+        recipe.id === id ? updatedRecipe : recipe
       );
       return {
-        recipes: newRecipes,
-        filteredRecipes: filterHelper(newRecipes, state.searchTerm)
+        recipes: updatedRecipes,
+        filteredRecipes: filterHelper(updatedRecipes, state.searchTerm),
       };
     }),
 
-  // Delete
+  // Delete a recipe by ID
   deleteRecipe: (id) =>
     set((state) => {
-      const newRecipes = state.recipes.filter((r) => r.id !== id);
+      const updatedRecipes = state.recipes.filter((recipe) => recipe.id !== id);
       return {
-        recipes: newRecipes,
-        filteredRecipes: filterHelper(newRecipes, state.searchTerm)
+        recipes: updatedRecipes,
+        filteredRecipes: filterHelper(updatedRecipes, state.searchTerm),
       };
     }),
 
-  // Search term and filtering
+  // Update only the prep time of a recipe
+  updatePrepTime: (id, newTime) =>
+    set((state) => {
+      const updatedRecipes = state.recipes.map((recipe) =>
+        recipe.id === id ? { ...recipe, prepTime: newTime } : recipe
+      );
+      return {
+        recipes: updatedRecipes,
+        filteredRecipes: filterHelper(updatedRecipes, state.searchTerm),
+      };
+    }),
+
+  // Search recipes by term
   setSearchTerm: (term) =>
     set((state) => ({
       searchTerm: term,
-      filteredRecipes: filterHelper(state.recipes, term)
+      filteredRecipes: filterHelper(state.recipes, term),
     })),
 
-  // explicit filter action if needed
-  filterRecipes: () =>
-    set((state) => ({
-      filteredRecipes: filterHelper(state.recipes, state.searchTerm)
-    }))
+  // Reset all recipes
+  resetRecipes: () => set({ recipes: [], filteredRecipes: [], searchTerm: "" }),
 }));
 
-// Helper used inside the store to compute filtered results
-function filterHelper(recipes, searchTerm) {
-  const q = (searchTerm || '').trim().toLowerCase();
-  if (!q) return recipes.slice(); // return a shallow copy
-
-  return recipes.filter((r) => {
-    // fields to match: title, description, ingredients (array or string), and optionally prepTime
-    const title = (r.title || '').toLowerCase();
-    const desc = (r.description || '').toLowerCase();
-
-    let ingredientsText = '';
-    if (Array.isArray(r.ingredients)) {
-      ingredientsText = r.ingredients.join(' ').toLowerCase();
-    } else {
-      ingredientsText = (r.ingredients || '').toLowerCase();
-    }
-
-    const prep = r.prepTime !== undefined && r.prepTime !== null ? String(r.prepTime).toLowerCase() : '';
-
-    return (
-      title.includes(q) ||
-      desc.includes(q) ||
-      ingredientsText.includes(q) ||
-      prep.includes(q)
-    );
-  });
-}
+export default useRecipeStore;
