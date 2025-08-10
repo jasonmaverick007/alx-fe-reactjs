@@ -1,35 +1,41 @@
 // src/components/EditRecipeForm.jsx
-import { useState } from 'react';
-import { useRecipeStore } from '../recipeStore';
+import React, { useState } from "react";
+import { useRecipeStore } from "../store/recipeStore";
 
-function EditRecipeForm({ recipe }) {
-  const updateRecipe = useRecipeStore((state) => state.updateRecipe);
-  const [title, setTitle] = useState(recipe.title);
-  const [description, setDescription] = useState(recipe.description);
+const EditRecipeForm = ({ recipeId, onClose }) => {
+  const recipe = useRecipeStore(state =>
+    state.recipes.find(r => r.id === recipeId)
+  );
+  const updateRecipe = useRecipeStore(state => state.updateRecipe);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    updateRecipe({ ...recipe, title, description });
-    alert('Recipe updated!');
+  const [title, setTitle] = useState(recipe?.title || "");
+  const [description, setDescription] = useState(recipe?.description || "");
+
+  const handleSubmit = (event) => {
+    event.preventDefault(); // ✅ Prevents page reload
+
+    updateRecipe(recipeId, { title, description });
+    if (onClose) onClose();
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: '20px' }}>
-      <h3>Edit Recipe</h3>
+    <form onSubmit={handleSubmit}>
+      <label>Title:</label>
       <input
         type="text"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', padding: '8px' }}
       />
+
+      <label>Description:</label>
       <textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', padding: '8px' }}
       />
+
       <button type="submit">Save Changes</button>
     </form>
   );
-}
+};
 
 export default EditRecipeForm;
