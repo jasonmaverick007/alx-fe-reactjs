@@ -13,7 +13,7 @@ const RecipeDetails = ({ recipeid }) => {
             <h1>{recipe.title}</h1>
             <p>{recipe.description}</p>
             <EditRecipeForm/>
-            <DeleteRecipeButton recipeid={recipe.Id} onDelete={() => NavigationHistoryEntry('/')}/>
+            <DeleteRecipeButton recipeid={recipe.id} onDelete={() => NavigationHistoryEntry('/')}/>
         </div>
     );
 }
