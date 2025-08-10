@@ -1,12 +1,15 @@
 import axios from "axios";
 
-const API_URL = "https://api.github.com/users";
+export const fetchUserData = async (username) => {
+  const API_URL = `https://api.github.com/users/${username}`;
 
-export const getUser = async (username) => {
-    const response = await axios.get('${API_URL}$(username)', {
-        headers: {
-            Authorization: 'token ${import.meta.env.VITE_APP_GITHUB_API_KEY}',
-        },
-    });
-    return response.data;
+  const response = await axios.get(API_URL, {
+    headers: {
+      Authorization: import.meta.env.VITE_APP_GITHUB_API_KEY
+        ? `token ${import.meta.env.VITE_APP_GITHUB_API_KEY}`
+        : undefined,
+    },
+  });
+
+  return response.data;
 };
