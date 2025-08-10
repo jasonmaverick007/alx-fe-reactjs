@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { fetchUserData } from "../services/githubService";
 
-function SearchBar() {
+function Search() {
   const [username, setUsername] = useState("");
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,8 +18,8 @@ function SearchBar() {
     try {
       const data = await fetchUserData(username);
       setUserData(data);
-    } catch (err) {
-      setError("Looks like we can't find the user");
+    } catch {
+      setError("Looks like we cant find the user"); // exact required message
     } finally {
       setLoading(false);
     }
@@ -52,14 +52,24 @@ function SearchBar() {
 
       {/* Successful Result */}
       {userData && (
-        <div style={{ border: "1px solid #ccc", padding: "1rem", width: "300px" }}>
+        <div
+          style={{
+            border: "1px solid #ccc",
+            padding: "1rem",
+            width: "300px",
+          }}
+        >
           <img
             src={userData.avatar_url}
             alt={userData.login}
             style={{ width: "80px", borderRadius: "50%" }}
           />
           <h3>{userData.name || userData.login}</h3>
-          <a href={userData.html_url} target="_blank" rel="noopener noreferrer">
+          <a
+            href={userData.html_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             View GitHub Profile
           </a>
         </div>
@@ -68,4 +78,4 @@ function SearchBar() {
   );
 }
 
-export default SearchBar;
+export default Search;
